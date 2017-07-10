@@ -16,7 +16,7 @@ Builds a ready to use microservice environment using docker-compose
 - **Assign docker at least 5 gigs of memory**   
 - **To run and build in one command**   
 docker-compose up --build -d   
-- **To list topis**   
+- **To list topics**   
 curl "http://localhost:8082/topics"   
 - **To list connectors**   
 curl "http://localhost:8083/connectors"   
@@ -27,5 +27,5 @@ curl -X POST -H "Content-Type: application/vnd.kafka.avro.v2+json" \
 "http://localhost:8082/topics/bar"  
 - **Initialize a sink to Couchbase using the Couchbase Kafka Connector**   
 curl -X POST -H "Content-Type: application/json" \   
-     --data '{"name": "cb", "config": {"connector.class":"com.couchbase.connect.kafka.CouchbaseSinkConnector","tasks.max":"1", "topics":"bar","connection.cluster_address":"cbdb","connection.bucket":"receiver"}}' \   
+     --data '{"name": "cb", "config": {"connector.class":"com.couchbase.connect.kafka.CouchbaseSinkConnector","tasks.max":"1", "topics":"bar","connection.cluster_address":"cbdb","connection.bucket":"receiver","connection.password":"passreceiver"}}' \   
     "http://localhost:8083/connectors"
