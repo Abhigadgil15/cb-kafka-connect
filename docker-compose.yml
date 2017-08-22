@@ -21,19 +21,6 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
-  schema:
-    hostname: schema
-    image: confluentinc/cp-schema-registry:3.2.2
-    depends_on:
-      - zookeeper
-      - kafka
-    ports:
-      - "8081:8081"
-    environment:
-      ACCESS_CONTROL_ALLOW_ORIGIN: "*"
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:32181
-      SCHEMA_REGISTRY_HOST_NAME: schema
-      SCHEMA_REGISTRY_LISTENERS: http://schema:8081
   rest:
     hostname: rest
     image: confluentinc/cp-kafka-rest:3.2.2
@@ -42,12 +29,10 @@ services:
     depends_on:
       - zookeeper
       - kafka
-      - schema
     environment:
       ACCESS_CONTROL_ALLOW_ORIGIN: "*"
       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:32181
       KAFKA_REST_LISTENERS: http://rest:8082
-      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema:8081
       KAFKA_REST_HOST_NAME: rest
   connect:
     hostname: connect
@@ -55,11 +40,11 @@ services:
     depends_on:
       - zookeeper
       - kafka
-      - schema
       - rest
     ports:
       - "8083:8083"
     environment:
+      ACCESS_CONTROL_ALLOW_ORIGIN: "*"
       CONNECT_BOOTSTRAP_SERVERS: kafka:29092
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_REST_PORT: 8083
@@ -67,10 +52,8 @@ services:
       CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
-      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema:8081
-      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema:8081
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_ZOOKEEPER_CONNECT: zookeeper:32181
